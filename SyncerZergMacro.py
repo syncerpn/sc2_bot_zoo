@@ -18,46 +18,56 @@ class SyncerZergMacro(BotAI):
         self.possible_race = [Race.Zerg]
         self.glhf = '(drone)(drone)(drone)(drone)(glhf)'
         self.build_step = 0
+        
         self.s_main_hatch = None
         self.s_nat_hatch = None
-        self.u_scout_lord_nat = None
         self.u_nat_hatch_drone = None
         self.l_nat_hatch = None
         self.l_pool = None
         self.u_first_gas_drone = None
         self.u_pool_drone = None
         self.l_first_gas = None
-
-    async def on_unit_type_changed(self, unit, previous_type):
-        print(f"My unit changed type: {unit} from {previous_type} to {unit.type_id}")
+        self.u_larva_consumed_tag = []
 
     async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send(self.glhf)
             self.s_main_hatch = self.townhalls[0]
-            self.train(UnitTypeId.DRONE)
-            self.build_step = 1
+
+        if self.build_step == 0:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 1
         
         if self.build_step == 1:
-            if self.can_afford(UnitTypeId.OVERLORD):
-                self.u_scout_lord_nat = self.larva.random
-                self.u_scout_lord_nat(AbilityId.LARVATRAIN_OVERLORD, subtract_cost=True, subtract_supply=True)
-                self.build_step = 2
+            if self.can_afford(UnitTypeId.OVERLORD) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_OVERLORD, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 2
         
         if self.build_step == 2:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 3
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 3
         
         if self.build_step == 3:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 4
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 4
         
         if self.build_step == 4:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 5
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 5
         
         if self.build_step == 5:
             if self.minerals >= 190:
@@ -86,27 +96,33 @@ class SyncerZergMacro(BotAI):
                 self.build_step = 7
         
         if self.build_step == 7:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 8
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 8
             
         if self.build_step == 8:
-            if self.can_afford(UnitTypeId.DRONE):
-                selected_larva = self.larva.random
-                selected_larva(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                min_distance = 99999
-                for vg in self.vespene_geyser:
-                    distance = vg.distance_to(selected_larva)
-                    if distance < min_distance:
-                        min_distance = distance
-                        self.l_first_gas = vg
-                        
-                self.build_step = 9
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva_r = selected_larva.random
+                    selected_larva_r(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    min_distance = 99999
+                    for vg in self.vespene_geyser:
+                        distance = vg.distance_to(selected_larva_r)
+                        if distance < min_distance:
+                            min_distance = distance
+                            self.l_first_gas = vg
+                            
+                    self.build_step = 9
                 
         if self.build_step == 9:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 10
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 10
         
         if self.build_step == 10:
             if self.supply_used == 18 and self.supply_workers == 16:
@@ -143,29 +159,105 @@ class SyncerZergMacro(BotAI):
                 self.build_step = 14
         
         if self.build_step == 14:
-            if self.can_afford(UnitTypeId.DRONE):
-                print(self.gas_buildings[0].type_id)
-                print(self.l_first_gas.type_id)
-                # self.s_main_hatch(AbilityId.RALLY_WORKERS, target=self.gas_buildings[0])
-                self.s_main_hatch(AbilityId.RALLY_WORKERS, target=self.l_first_gas)
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 15
+            self.l_first_gas = self.gas_buildings[0]
+            self.s_main_hatch(AbilityId.RALLY_WORKERS, target=self.l_first_gas)
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 15
         
         if self.build_step == 15:
-            if self.can_afford(UnitTypeId.DRONE):
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 16
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 16
         
         if self.build_step == 16:
             if self.can_afford(UnitTypeId.DRONE) and self.larva:
-                self.larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
-                self.build_step = 17
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 17
                 
         if self.build_step == 17:
-            if self.supply_workers == 18:
-                self.s_main_hatch(AbilityId.RALLY_WORKERS, target=self.mineral_field.closest_to(self.s_main_hatch))
-                self.build_step = 19
+            if self.supply_workers == 19:
+                self.s_main_hatch(AbilityId.RALLY_WORKERS, target=self.mineral_field.closest_to(self.l_nat_hatch))
+                self.build_step = 18
         
-        print(self.supply_workers)
+        if self.build_step == 18:
+            if self.can_afford(UnitTypeId.OVERLORD) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_OVERLORD, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 19
         
+        if self.build_step == 19:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 20
         
+        if self.build_step == 20:
+            if len(self.townhalls) == 2 and self.structures(UnitTypeId.SPAWNINGPOOL).ready and self.minerals >= 300:
+                for t in self.townhalls:
+                    t.build(UnitTypeId.QUEEN)
+                self.build_step = 21
+                
+        if self.build_step == 21:
+            if self.can_afford(UnitTypeId.ZERGLING) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_ZERGLING, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 22
+                
+        if self.build_step == 22:
+            if self.can_afford(UnitTypeId.ZERGLING) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_ZERGLING, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 23
+        
+        if self.build_step == 23:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 24
+        
+        if self.build_step == 24:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 25
+        
+        if self.build_step == 25:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 26
+        
+        if self.build_step == 26:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 27
+        
+        if self.build_step == 27:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 28
+        
+        if self.build_step == 28:
+            if self.can_afford(UnitTypeId.DRONE) and self.larva:
+                selected_larva = self.larva.filter(lambda u: u.tag not in self.unit_tags_received_action)
+                if selected_larva:
+                    selected_larva.random(AbilityId.LARVATRAIN_DRONE, subtract_cost=True, subtract_supply=True)
+                    self.build_step = 29
